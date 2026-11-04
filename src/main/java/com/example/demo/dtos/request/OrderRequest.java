@@ -4,6 +4,13 @@ import com.example.demo.enums.OrderStatusEnum;
 
 public class OrderRequest {
     private OrderStatusEnum status;
+    private String note;
+    public String getNote() {
+        return note;
+    }
+    public void setNote(String note) {
+        this.note = note;
+    }
     public OrderStatusEnum getStatus() {
         return status;
     }

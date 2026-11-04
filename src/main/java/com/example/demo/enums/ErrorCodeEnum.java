@@ -28,6 +28,17 @@ public enum ErrorCodeEnum {
         HttpStatus.NOT_FOUND
     ),
 
+    CART_NOT_FOUND(
+        "CART_NOT_FOUND",
+        "Cart not found",
+        HttpStatus.NOT_FOUND
+    ),
+
+    ORDER_NOT_FOUND(
+        "ORDER_NOT_FOUND",
+        "Order not found",
+        HttpStatus.NOT_FOUND
+    ),
     INVALID_CREDENTIALS(
         "INVALID_CREDENTIALS",
         "Username or password is incorrect",

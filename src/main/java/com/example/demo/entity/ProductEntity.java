@@ -2,13 +2,17 @@ package com.example.demo.entity;
 
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.example.demo.enums.ProductStatusEnum;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity 
@@ -31,6 +35,12 @@ public class ProductEntity extends BaseEntity {
     @Column(nullable = true)
     private ProductStatusEnum status;
    
+    @OneToMany(mappedBy = "productEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<OrderItemsEntity> orderItems;
+
+    @OneToMany(mappedBy = "productEntity",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<CartItemEntity> cartItemEntities;
+
     public ProductEntity() {}
     public ProductEntity(String productName, 
         String productDescription, 
@@ -76,5 +86,17 @@ public class ProductEntity extends BaseEntity {
 
     public void setStatus(ProductStatusEnum status) {
         this.status = status;
+    }
+    public List<OrderItemsEntity> getOrderItems() {
+        return orderItems;
+    }
+    public void setOrderItems(List<OrderItemsEntity> orderItems) {
+        this.orderItems = orderItems;
+    }
+    public List<CartItemEntity> getCartItemEntities() {
+        return cartItemEntities;
+    }
+    public void setCartItemEntities(List<CartItemEntity> cartItemEntities) {
+        this.cartItemEntities = cartItemEntities;
     }
 }

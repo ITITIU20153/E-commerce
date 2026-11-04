@@ -25,14 +25,18 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                  // Chỉ ADMIN
-                    .requestMatchers("/admin/**")
-                    .hasRole("ADMIN")
+                .requestMatchers("/admin/**")
+                .hasRole("ADMIN")
+
+                .requestMatchers("/cart/**")
+                .hasRole("CUSTOMER")
 
                 // // User đã đăng nhập
                 // .requestMatchers("/api/users/**")
                 //     .hasAnyRole("USER")
                 .requestMatchers("/auth/**",
                 "/orders/**").permitAll()
+
                 // Các API còn lại
                 .anyRequest().authenticated()
             )

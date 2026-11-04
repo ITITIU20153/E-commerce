@@ -37,6 +37,20 @@ public class OrderEntity extends BaseEntity {
     @Column(name = "sub_total")
     private BigDecimal subTotal;
 
+    @Column(name = "quantity")
+    private Integer quantity;
+
+    @Column(name = "note")
+    private String note;
+    
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     public BigDecimal getSubTotal() {
         return subTotal;
     }
@@ -44,9 +58,6 @@ public class OrderEntity extends BaseEntity {
     public void setSubTotal(BigDecimal subTotal) {
         this.subTotal = subTotal;
     }
-
-    @Column(name = "quantity")
-    private Integer quantity;
 
     public Integer getQuantity() {
         return quantity;
