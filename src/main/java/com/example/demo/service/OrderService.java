@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +36,7 @@ public class OrderService {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
     }
+
     @Transactional 
     public OrderResponse saveOrder(CreateOrderRequest orderRequests) {
       OrderEntity order = toOrderEntity(orderRequests);
@@ -58,6 +57,7 @@ public class OrderService {
         order.setStatus(OrderStatusEnum.PENDING);
         return toResponse(orderRepository.save(order));
     }
+
     private OrderResponse toResponse(OrderEntity orderEntity) {
         OrderResponse reponse = new OrderResponse();
         reponse.setStatus(orderEntity.getStatus());

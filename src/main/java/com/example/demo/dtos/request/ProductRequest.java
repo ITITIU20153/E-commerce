@@ -2,10 +2,7 @@ package com.example.demo.dtos.request;
 
 import java.math.BigDecimal;
 
-import com.example.demo.entity.BaseEntity;
 import com.example.demo.enums.ProductStatusEnum;
-
-import jakarta.persistence.Column;
 
 public class ProductRequest {
     private String productName;

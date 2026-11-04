@@ -37,6 +37,12 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**",
                 "/orders/**").permitAll()
 
+                .requestMatchers(
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html"
+                ).permitAll()
+
                 // Các API còn lại
                 .anyRequest().authenticated()
             )
