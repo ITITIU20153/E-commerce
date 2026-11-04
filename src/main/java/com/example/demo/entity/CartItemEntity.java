@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity 
 @Table(name = "cart_items_table")
-public class CartItemEntity {
+public class CartItemEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")

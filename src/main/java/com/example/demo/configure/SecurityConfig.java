@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .hasRole("ADMIN")
 
                 .requestMatchers("/cart/**")
-                .hasRole("CUSTOMER")
+                .hasAnyRole("CUSTOMER","ADMIN")
 
                 // // User đã đăng nhập
                 // .requestMatchers("/api/users/**")

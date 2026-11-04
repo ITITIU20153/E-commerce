@@ -2,10 +2,14 @@ package com.example.demo.entity;
 
 import com.example.demo.enums.UserRoleEnum;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity 
@@ -22,6 +26,16 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = true)
     private UserRoleEnum role;
 
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name = "cart_id") 
+    private CartEntity cartEntity;
+    
+    public CartEntity getCartEntity() {
+        return cartEntity;
+    }
+    public void setCartEntity(CartEntity cartEntity) {
+        this.cartEntity = cartEntity;
+    }
     protected  UserEntity() {}
     public UserEntity(String username,String password, UserRoleEnum role) {
         this.username= username;

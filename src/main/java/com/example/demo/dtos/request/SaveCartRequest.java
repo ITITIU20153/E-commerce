@@ -3,31 +3,23 @@ package com.example.demo.dtos.request;
 import java.util.List;
 
 public class SaveCartRequest {
-    private Long cartId;
     private Long userId;
-    private List<AddToCartRequest> AddToCartRequest;
+    private List<AddToCartRequest> addToCartRequest;
 
     public Long getUserId() {
         return userId;
     }
 
     public void setUserId(Long userId) {
+        System.out.println("Setter userId: " + userId);
         this.userId = userId;
     }
     
-    public Long getCartId() {
-        return cartId;
-    }
-
-    public void setCartId(Long cartId) {
-        this.cartId = cartId;
-    }
-
     public List<AddToCartRequest> getAddToCartRequest() {
-        return AddToCartRequest;
+        return addToCartRequest;
     }
 
     public void setAddToCartRequest(List<AddToCartRequest> addToCartRequest) {
-        AddToCartRequest = addToCartRequest;
+        this.addToCartRequest = addToCartRequest;
     }    
 }

@@ -35,23 +35,25 @@ public class CartService {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
     }
-
+    
     @Transactional 
     public CartEntity addItemsToCart(SaveCartRequest cartRequest) {
-        List<AddToCartRequest> items = cartRequest.getAddToCartRequest();
         CartEntity cart = toCartEntity(cartRequest);
+        List<AddToCartRequest> itemRequests = cartRequest.getAddToCartRequest();
+        List<CartItemEntity> items = new ArrayList<>();
         Integer quantity = 0;
         BigDecimal amount = new BigDecimal(0);
-        for (AddToCartRequest item: items) {
+        for (AddToCartRequest item: itemRequests) {
             CartItemEntity cartItemEntity = toCartItemEntity(item);
             BigDecimal productPrice = cartItemEntity.getProductEntity().getPrice();
-            cartItemEntity.setCartEntity(null);
             cartItemEntity.setCartEntity(cart);
             quantity = quantity + cartItemEntity.getQuantity();
             amount = amount.add((productPrice.multiply(BigDecimal.valueOf(cartItemEntity.getQuantity()))));
+            items.add(cartItemEntity);
         }
         cart.setTotalAmount(amount);
         cart.setTotalQuantity(quantity);
+        cart.setCartItemEntities(items);
         return cartRepository.save(cart);
     }
 
@@ -81,7 +83,8 @@ public class CartService {
         return cartResponse;
     }
     private CartEntity toCartEntity(SaveCartRequest cartRequest) {
-        CartEntity cart = cartRepository.findById(cartRequest.getCartId()).
+        System.out.println(cartRequest.getUserId());
+        CartEntity cart = cartRepository.findByUserId(cartRequest.getUserId()).
         orElseThrow(() -> new NotFoundException(ErrorCodeEnum.CART_NOT_FOUND));
         UserEntity user = userRepository.findById(cartRequest.getUserId()).
         orElseThrow(() -> new NotFoundException(ErrorCodeEnum.USER_NOT_FOUND));

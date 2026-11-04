@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.math.BigDecimal;
+
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dtos.request.LoginRequest;
 import com.example.demo.dtos.request.RegisterRequest;
 import com.example.demo.dtos.response.LoginResponse;
+import com.example.demo.entity.CartEntity;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.enums.ErrorCodeEnum;
 import com.example.demo.exception.InvalidCredentialsHandler;
@@ -14,6 +17,8 @@ import com.example.demo.exception.NotFoundException;
 import com.example.demo.exception.UsernameExistsException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
+
+import jakarta.transaction.Transactional;
 
 @Service 
 public class UserService {
@@ -27,9 +32,17 @@ public class UserService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @Transactional 
     public UserEntity saveUser(RegisterRequest registerRequest) {
         existByUsername(registerRequest.getUsername());
-        return userRepository.save(toEntity(registerRequest));
+        UserEntity user = toEntity(registerRequest);
+        CartEntity cart = new CartEntity();
+        cart.setCartItemEntities(null);
+        cart.setTotalAmount(BigDecimal.ZERO);
+        cart.setTotalQuantity(0);
+        cart.setUser(user);
+        user.setCartEntity(cart);
+        return userRepository.save(user);
     }
 
     public LoginResponse login(LoginRequest loginRequest) {

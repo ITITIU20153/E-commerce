@@ -34,13 +34,30 @@ public class OrderEntity extends BaseEntity {
     @Column(nullable = false)
     private OrderStatusEnum status;
 
-    @Column(name = "sub_total")
-    private BigDecimal subTotal;
+    @Column(name = "total_amount")
+    private BigDecimal totalAmount;
 
-    @Column(name = "quantity")
-    private Integer quantity;
+    @Column(name = "total_quantity")
+    private Integer totalQuantity;
 
-    @Column(name = "note")
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Integer getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(Integer totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
+
+
+    @Column(name = "note",nullable = true)
     private String note;
     
     public String getNote() {
@@ -51,21 +68,6 @@ public class OrderEntity extends BaseEntity {
         this.note = note;
     }
 
-    public BigDecimal getSubTotal() {
-        return subTotal;
-    }
-
-    public void setSubTotal(BigDecimal subTotal) {
-        this.subTotal = subTotal;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 
     @CreationTimestamp 
     @Column(updatable = false)

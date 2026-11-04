@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dtos.request.CreateOrderRequest;
 import com.example.demo.dtos.request.OrderItemsRequest;
+import com.example.demo.dtos.response.OrderResponse;
 import com.example.demo.service.OrderService;
 
 @RestController 
@@ -21,10 +23,10 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<Void> saveOrder(@PathVariable Long id,
-        @RequestBody  List<OrderItemsRequest> orderItemsRequests){
-        orderService.saveOrder(id, orderItemsRequests);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping()
+    public ResponseEntity<OrderResponse> saveOrder(
+        @RequestBody  CreateOrderRequest requests){
+        OrderResponse orderResponse = orderService.saveOrder(requests);
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
     }
 }
