@@ -8,8 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dtos.request.CreateOrderRequest;
 import com.example.demo.dtos.request.OrderItemsRequest;
+import com.example.demo.dtos.request.UpdateCartItemRequest;
 import com.example.demo.dtos.response.OrderItemResponse;
 import com.example.demo.dtos.response.OrderResponse;
+import com.example.demo.entity.CartEntity;
+import com.example.demo.entity.CartItemEntity;
 import com.example.demo.entity.OrderEntity;
 import com.example.demo.entity.OrderItemsEntity;
 import com.example.demo.entity.ProductEntity;
@@ -29,21 +32,30 @@ public class OrderService {
     private OrderRepository orderRepository;
     private ProductRepository productRepository;
     private UserRepository userRepository;
-    private CartRepository cartRepository;
     OrderService(OrderRepository orderRepository, 
         ProductRepository productRepository, 
-        UserRepository userRepository,
-    CartRepository cartRepository) {
+        UserRepository userRepository) {
 
         this.orderRepository= orderRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
-        this.cartRepository = cartRepository;
     }
-    public List<OrderEntity> findOrdersByUserId(Long id) {
-        return orderRepository.findOrderByUserEntity_Id(id);
+    public List<OrderResponse> findOrdersByUserId(Long id) {
+        List<OrderEntity> orders = orderRepository.findOrderByUserEntity_Id(id);
+        List<OrderResponse> orderResponses = new ArrayList<>();
+        for (OrderEntity order: orders) {
+            orderResponses.add(toResponse(order));
+        }
+        return orderResponses;
     }
 
+    public OrderResponse cancelOrder(Long orderId) {
+        OrderEntity order = orderRepository.findById(orderId).
+        orElseThrow(() -> new NotFoundException(ErrorCodeEnum.ORDER_NOT_FOUND));
+        order.getOrderItemsEntity().forEach(item -> returnProduct(item)); 
+        order.setStatus(OrderStatusEnum.CANCELLED);
+        return toResponse(order);
+    }
     @Transactional 
     public OrderResponse saveOrder(CreateOrderRequest orderRequests) {
       OrderEntity order = toOrderEntity(orderRequests);
@@ -56,18 +68,9 @@ public class OrderService {
 
         for (OrderItemsRequest itemRequest: orderRequests.getOrderItemsRequests()) {
             OrderItemsEntity item = toOrderItemEntity(itemRequest);
+            // decrease Product
+            decreaseProduct(item);
             //
-            ProductEntity product = item.getProductEntity();
-            Integer remainStockQuantity = product.getStockQuantity() - item.getQuantity();
-            product.setStockQuantity(remainStockQuantity);
-            if (remainStockQuantity < 0 ) {
-                throw new BadRequestExceptionHandler(ErrorCodeEnum.INVALID_ORDER);
-            }
-            if (remainStockQuantity == 0) {
-                product.setStatus(ProductStatusEnum.OUT_OF_STOCK);
-            }
-            productRepository.save(product);
-
             BigDecimal price = item.getProductEntity().getPrice();
             totalQuantity = totalQuantity + item.getQuantity();
             totalAmount= totalAmount.add(price.multiply(BigDecimal.valueOf(item.getQuantity())));
@@ -90,7 +93,6 @@ public class OrderService {
         reponse.setUsername(orderEntity.getUserEntity().getUsername());
         reponse.setTotalAmount(orderEntity.getTotalAmount());
         reponse.setTotalQuantity(orderEntity.getTotalQuantity());
-        reponse.setOrderItemResponses(null);
         List<OrderItemResponse> itemReponses = new ArrayList<>();
         for (OrderItemsEntity item: orderEntity.getOrderItemsEntity()) {
             OrderItemResponse itemReponse = new OrderItemResponse();
@@ -125,5 +127,29 @@ public class OrderService {
         item.setProductEntity(product);
         item.setQuantity(orderItemRequest.getQuantity());
         return item;
+    }
+    private void decreaseProduct(OrderItemsEntity item) {
+        ProductEntity product = item.getProductEntity();
+            Integer remainStockQuantity = product.getStockQuantity() - item.getQuantity();
+            product.setStockQuantity(remainStockQuantity);
+            if (product.getStatus() == ProductStatusEnum.INACTIVE) {
+                throw new BadRequestExceptionHandler(ErrorCodeEnum.INACTIVE_PRODUCT);
+            }
+            if (remainStockQuantity < 0 ) {
+                throw new BadRequestExceptionHandler(ErrorCodeEnum.INVALID_ORDER);
+            }
+            if (remainStockQuantity == 0) {
+                product.setStatus(ProductStatusEnum.OUT_OF_STOCK);
+            }
+            productRepository.save(product);
+    }
+    private void returnProduct(OrderItemsEntity item) {
+        ProductEntity product = item.getProductEntity();
+        if (product.getStatus() == ProductStatusEnum.OUT_OF_STOCK) {
+            product.setStatus(ProductStatusEnum.ACTIVE);
+        } 
+        Integer stockQuantity = product.getStockQuantity() + item.getQuantity();
+        product.setStockQuantity(stockQuantity);
+        productRepository.save(product);
     }
 }

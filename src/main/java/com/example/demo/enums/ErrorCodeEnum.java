@@ -46,6 +46,24 @@ public enum ErrorCodeEnum {
         HttpStatus.BAD_REQUEST
     ),
 
+    OUT_OF_STOCK_PRODUCT (
+        "OUT_OF_STOCK_PRODUCT",
+        "Product is out of stock",
+        HttpStatus.BAD_REQUEST
+    ),
+
+    ITEM_NOT_FOUND (
+        "ITEM_NOT_FOUND",
+        "Not found item",
+        HttpStatus.NOT_FOUND
+    ),
+
+    INACTIVE_PRODUCT (
+        "INACTIVEK_PRODUCT",
+        "Product is inactive",
+        HttpStatus.BAD_REQUEST
+    ),
+
     INVALID_CREDENTIALS(
         "INVALID_CREDENTIALS",
         "Username or password is incorrect",

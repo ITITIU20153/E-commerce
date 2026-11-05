@@ -19,7 +19,6 @@ public class GlobalExceptionHandler {
                 NotFoundException ex) {
 
             ErrorCodeEnum errorCode = ex.getErrorCodeEnum();
-
             
             return ResponseEntity
                     .status(errorCode.getStatus().value())

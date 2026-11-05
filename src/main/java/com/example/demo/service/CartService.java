@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dtos.request.AddToCartRequest;
 import com.example.demo.dtos.request.SaveCartRequest;
+import com.example.demo.dtos.request.UpdateCartItemRequest;
 import com.example.demo.dtos.response.CartItemResponse;
 import com.example.demo.dtos.response.CartResponse;
 import com.example.demo.entity.CartEntity;
@@ -26,14 +27,17 @@ import jakarta.transaction.Transactional;
 @Service 
 public class CartService {
     private CartRepository cartRepository;
+    private CartItemRepository cartItemRepository;
     private UserRepository userRepository;
     private ProductRepository productRepository;
     CartService(CartRepository cartRepository,
         UserRepository userRepository,
-    ProductRepository productRepository) {
+    ProductRepository productRepository,
+    CartItemRepository cartItemRepository) {
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.cartItemRepository = cartItemRepository;
     }
     
     @Transactional 
@@ -61,6 +65,13 @@ public class CartService {
         CartEntity cart = cartRepository.findByUser_Id(userId).
         orElseThrow(() -> new NotFoundException(ErrorCodeEnum.CART_NOT_FOUND));
         return toResponse(cart);
+    }
+
+    public CartItemEntity updateCartItem(Long cartId,UpdateCartItemRequest request) {
+        CartItemEntity cartItem = cartItemRepository.findByCartIdAndProductId(cartId, request.getProductId())
+        .orElseThrow(() -> new NotFoundException(ErrorCodeEnum.ITEM_NOT_FOUND));
+        cartItem.setQuantity(request.getQuantity());
+        return cartItem;
     }
 
     private CartResponse toResponse(CartEntity cart) {
