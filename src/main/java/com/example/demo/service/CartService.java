@@ -58,7 +58,7 @@ public class CartService {
     }
 
     public CartResponse findCartByUserId(Long userId) {
-        CartEntity cart = cartRepository.findByUserId(userId).
+        CartEntity cart = cartRepository.findByUser_Id(userId).
         orElseThrow(() -> new NotFoundException(ErrorCodeEnum.CART_NOT_FOUND));
         return toResponse(cart);
     }
@@ -84,7 +84,7 @@ public class CartService {
     }
     private CartEntity toCartEntity(SaveCartRequest cartRequest) {
         System.out.println(cartRequest.getUserId());
-        CartEntity cart = cartRepository.findByUserId(cartRequest.getUserId()).
+        CartEntity cart = cartRepository.findByUser_Id(cartRequest.getUserId()).
         orElseThrow(() -> new NotFoundException(ErrorCodeEnum.CART_NOT_FOUND));
         UserEntity user = userRepository.findById(cartRequest.getUserId()).
         orElseThrow(() -> new NotFoundException(ErrorCodeEnum.USER_NOT_FOUND));

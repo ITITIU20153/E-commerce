@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
 
         @ExceptionHandler (BadRequestExceptionHandler.class) 
         public ResponseEntity<ErrorResponse> handleBadRequestException(
-                InvalidCredentialsHandler ex) {
+                BadRequestExceptionHandler ex) {
             ErrorCodeEnum e = ex.getErrorCodeEnum();
             return ResponseEntity
                     .status(e.getStatus().value())

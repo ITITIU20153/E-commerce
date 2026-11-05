@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import java.util.List;
+
 import com.example.demo.enums.UserRoleEnum;
 
 import jakarta.persistence.CascadeType;
@@ -9,6 +11,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -30,6 +33,16 @@ public class UserEntity extends BaseEntity {
     @JoinColumn(name = "cart_id") 
     private CartEntity cartEntity;
     
+    @OneToMany(mappedBy = "userEntity")
+    private List<OrderEntity> orderEntities;
+    
+    
+    public List<OrderEntity> getOrderEntities() {
+        return orderEntities;
+    }
+    public void setOrderEntities(List<OrderEntity> orderEntities) {
+        this.orderEntities = orderEntities;
+    }
     public CartEntity getCartEntity() {
         return cartEntity;
     }

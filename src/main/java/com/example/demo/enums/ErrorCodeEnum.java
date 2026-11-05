@@ -39,6 +39,13 @@ public enum ErrorCodeEnum {
         "Order not found",
         HttpStatus.NOT_FOUND
     ),
+
+    INVALID_ORDER(
+        "INVALID_ORDER",
+        "Invalid Order",
+        HttpStatus.BAD_REQUEST
+    ),
+
     INVALID_CREDENTIALS(
         "INVALID_CREDENTIALS",
         "Username or password is incorrect",

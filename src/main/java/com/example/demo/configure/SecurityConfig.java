@@ -31,9 +31,12 @@ public class SecurityConfig {
                 .requestMatchers("/cart/**")
                 .hasAnyRole("CUSTOMER","ADMIN")
 
-                // // User đã đăng nhập
-                // .requestMatchers("/api/users/**")
-                //     .hasAnyRole("USER")
+                .requestMatchers("/users/delete/**").
+                hasAnyRole("ADMIN")
+
+                .requestMatchers("/users/**").
+                hasAnyRole("ADMIN","CUSTOMER")
+                
                 .requestMatchers("/auth/**",
                 "/orders/**").permitAll()
 

@@ -27,7 +27,7 @@ public class OrderEntity extends BaseEntity {
     // private String address;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") 
+    @JoinColumn(name = "user_id", nullable = true) 
     private UserEntity userEntity;
     
     @Enumerated(EnumType.STRING)

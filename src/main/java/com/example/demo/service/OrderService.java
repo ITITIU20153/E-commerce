@@ -3,7 +3,6 @@ package com.example.demo.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +16,10 @@ import com.example.demo.entity.ProductEntity;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.enums.ErrorCodeEnum;
 import com.example.demo.enums.OrderStatusEnum;
+import com.example.demo.enums.ProductStatusEnum;
+import com.example.demo.exception.BadRequestExceptionHandler;
 import com.example.demo.exception.NotFoundException;
+import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.UserRepository;
@@ -27,14 +29,19 @@ public class OrderService {
     private OrderRepository orderRepository;
     private ProductRepository productRepository;
     private UserRepository userRepository;
-    
+    private CartRepository cartRepository;
     OrderService(OrderRepository orderRepository, 
         ProductRepository productRepository, 
-        UserRepository userRepository) {
+        UserRepository userRepository,
+    CartRepository cartRepository) {
 
-        this.orderRepository=orderRepository;
+        this.orderRepository= orderRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.cartRepository = cartRepository;
+    }
+    public List<OrderEntity> findOrdersByUserId(Long id) {
+        return orderRepository.findOrderByUserEntity_Id(id);
     }
 
     @Transactional 
@@ -43,8 +50,24 @@ public class OrderService {
       Integer totalQuantity = 0;
       BigDecimal totalAmount = new BigDecimal(0);        
         List<OrderItemsEntity> orderItemsEntities = new ArrayList<>();
+        // CartEntity cart =cartRepository.findByUserId(order.getUserEntity().getId()).
+        // orElseThrow(() -> new NotFoundException(ErrorCodeEnum.CART_NOT_FOUND));
+        // List<CartItemEntity> cartItems = cart.getCartItemEntities();
+
         for (OrderItemsRequest itemRequest: orderRequests.getOrderItemsRequests()) {
             OrderItemsEntity item = toOrderItemEntity(itemRequest);
+            //
+            ProductEntity product = item.getProductEntity();
+            Integer remainStockQuantity = product.getStockQuantity() - item.getQuantity();
+            product.setStockQuantity(remainStockQuantity);
+            if (remainStockQuantity < 0 ) {
+                throw new BadRequestExceptionHandler(ErrorCodeEnum.INVALID_ORDER);
+            }
+            if (remainStockQuantity == 0) {
+                product.setStatus(ProductStatusEnum.OUT_OF_STOCK);
+            }
+            productRepository.save(product);
+
             BigDecimal price = item.getProductEntity().getPrice();
             totalQuantity = totalQuantity + item.getQuantity();
             totalAmount= totalAmount.add(price.multiply(BigDecimal.valueOf(item.getQuantity())));
@@ -55,7 +78,9 @@ public class OrderService {
         order.setTotalQuantity(totalQuantity);
         order.setOrderItemsEntity(orderItemsEntities);
         order.setStatus(OrderStatusEnum.PENDING);
-        return toResponse(orderRepository.save(order));
+        OrderResponse orderResponse = toResponse(orderRepository.save(order));
+        
+        return orderResponse;
     }
 
     private OrderResponse toResponse(OrderEntity orderEntity) {
@@ -94,7 +119,7 @@ public class OrderService {
         }
 
         if (product.getStockQuantity() < quantity) {
-            throw new RuntimeException("Insufficient stock");
+            throw new BadRequestExceptionHandler(ErrorCodeEnum.INVALID_ORDER);
         }
         OrderItemsEntity item = new OrderItemsEntity();
         item.setProductEntity(product);
