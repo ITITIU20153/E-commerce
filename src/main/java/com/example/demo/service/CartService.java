@@ -67,11 +67,11 @@ public class CartService {
         return toResponse(cart);
     }
 
-    public CartItemEntity updateCartItem(Long cartId,UpdateCartItemRequest request) {
-        CartItemEntity cartItem = cartItemRepository.findByCartIdAndProductId(cartId, request.getProductId())
+    public  CartItemResponse updateCartItem(Long cartId,UpdateCartItemRequest request) {
+        CartItemEntity cartItem = cartItemRepository.findByCartEntity_IdAndProductEntity_Id(cartId, request.getProductId())
         .orElseThrow(() -> new NotFoundException(ErrorCodeEnum.ITEM_NOT_FOUND));
         cartItem.setQuantity(request.getQuantity());
-        return cartItem;
+        return toItemResponse(cartItemRepository.save(cartItem));
     }
 
     private CartResponse toResponse(CartEntity cart) {
@@ -93,6 +93,19 @@ public class CartService {
         cartResponse.setItems(cartItemResponses);
         return cartResponse;
     }
+
+    private CartItemResponse toItemResponse(CartItemEntity item) {
+        ProductEntity product = item.getProductEntity();
+        CartItemResponse cartItemResponse = new CartItemResponse();
+        cartItemResponse.setPrice(product.getPrice());
+        cartItemResponse.setProductId(product.getId());
+        cartItemResponse.setProductName(product.getProductName());
+        cartItemResponse.setQuantity(item.getQuantity());
+        cartItemResponse.setStatus(product.getStatus());
+        cartItemResponse.setStockQuantity(product.getStockQuantity());
+        return cartItemResponse;
+    }
+
     private CartEntity toCartEntity(SaveCartRequest cartRequest) {
         System.out.println(cartRequest.getUserId());
         CartEntity cart = cartRepository.findByUser_Id(cartRequest.getUserId()).

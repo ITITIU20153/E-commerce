@@ -10,7 +10,7 @@ import com.example.demo.entity.CartItemEntity;
 
 @Repository 
 public interface CartItemRepository extends JpaRepository<CartItemEntity,Long> {
-    Optional<CartItemEntity> findByCartIdAndProductId(
+    Optional<CartItemEntity> findByCartEntity_IdAndProductEntity_Id(
         Long cartId,
         Long productId
     );

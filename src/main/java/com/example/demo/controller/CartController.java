@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dtos.request.SaveCartRequest;
 import com.example.demo.dtos.request.UpdateCartItemRequest;
+import com.example.demo.dtos.response.CartItemResponse;
 import com.example.demo.dtos.response.CartResponse;
 import com.example.demo.entity.CartItemEntity;
 import com.example.demo.service.CartService;
@@ -41,7 +42,7 @@ public class CartController {
     }
 
     @PatchMapping("/{id}")
-    public  ResponseEntity<CartItemEntity> updateCartItem(@PathVariable Long id,@RequestBody UpdateCartItemRequest request) {
+    public  ResponseEntity<CartItemResponse> updateCartItem(@PathVariable Long id,@RequestBody UpdateCartItemRequest request) {
         return ResponseEntity.ok(cartService.updateCartItem(id, request));
     }
 }
